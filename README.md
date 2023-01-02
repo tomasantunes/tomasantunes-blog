@@ -6,6 +6,6 @@ Blog made with Express and React
 {
     "SESSION_KEY": "XXXXXXXXXXX",
     "USER": "XXXXXXXXXXXX",
-    "PASS: "XXXXXXXXXXX"
+    "PASS": "XXXXXXXXXXX"
 }
 ```
