@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
 var secretConfig = require('./secret-config.json');
+var mysql = require('mysql2');
 
 var app = express();
 
@@ -24,6 +25,23 @@ app.use(session({
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('tomasantunes-blog-frontend/build'));
+
+function connectDB() {
+  var con = mysql.createConnection({
+      host: 'localhost',
+      user: 'root',
+      password: '',
+      database: 'tomasantunes_blog',
+  });
+  con.connect(function(err) {
+      if (err) {
+          console.log("MySQL is not connected.");
+          throw err;
+      }
+      console.log("Connected to MySQL!");
+  });
+  return con;
+}
 
 // Frontend routes
 app.get('/', (req,res) => {
@@ -63,6 +81,52 @@ app.post("/api/check-login", (req, res) => {
   else {
     res.json({status: "NOK", data: "Login failed."});
   }
+});
+
+app.get("/api/get-posts", (req, res) => {
+  var con = connectDB();
+  var sql = "SELECT * FROM posts;";
+  con.query(sql, function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err.message});
+    }
+    else {
+      res.json({status: "OK", data: result});
+    }
+  });
+});
+
+app.post(config.BASE_URL + "/api/add-post", (req, res) => {
+  var title = req.body.title;
+  var content = req.body.content;
+  var tags = req.body.tags;
+  var slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+
+  var con = connectDB();
+  var sql = "INSERT INTO posts (title, slug, content, tags) VALUES (?, ?, ?, ?);";
+  con.query(sql, [title, slug, content, tags], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err.message});
+    }
+    else {
+      res.json({status: "OK", data: result});
+    }
+  });
+});
+
+app.get("/api/get-post/:slug", (req, res) => {
+  var slug = req.params.slug;
+
+  var con = connectDB();
+  var sql = "SELECT * FROM posts WHERE slug = ?;";
+  con.query(sql, [slug], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err.message});
+    }
+    else {
+      res.json({status: "OK", data: result});
+    }
+  });
 });
 
 // catch 404 and forward to error handler

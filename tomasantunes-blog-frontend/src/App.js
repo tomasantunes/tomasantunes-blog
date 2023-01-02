@@ -5,6 +5,8 @@ import About from './components/About';
 import Contact from './components/Contact';
 import Admin from './components/Admin';
 import Login from './components/Login';
+import Posts from './components/Posts';
+import NewPost from './components/NewPost';
 
 
 function App() {
@@ -16,6 +18,8 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/posts" element={<Posts />} />
+        <Route path="/admin/new-post" element={<NewPost />} />
       </Routes>
     </Router>
   );
