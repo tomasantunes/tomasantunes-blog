@@ -96,7 +96,7 @@ app.get("/api/get-posts", (req, res) => {
   });
 });
 
-app.post(config.BASE_URL + "/api/add-post", (req, res) => {
+app.post("/api/add-post", (req, res) => {
   var title = req.body.title;
   var content = req.body.content;
   var tags = req.body.tags;
@@ -120,6 +120,57 @@ app.get("/api/get-post/:slug", (req, res) => {
   var con = connectDB();
   var sql = "SELECT * FROM posts WHERE slug = ?;";
   con.query(sql, [slug], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err.message});
+    }
+    else {
+      res.json({status: "OK", data: result});
+    }
+  });
+});
+
+function getChildrenComments(comments, parent_id) {
+  var children = [];
+  for (var i = 0; i < comments.length; i++) {
+    if (comments[i].parent_id == parent_id) {
+      children.push(comments[i]);
+    }
+  }
+  return children;
+}
+
+app.get("/api/get-comments/:post_id", (req, res) => {
+  var post_id = req.params.post_id;
+
+  var con = connectDB();
+  var sql = "SELECT * FROM comments WHERE post_id = ?;";
+  con.query(sql, [post_id], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err.message});
+    }
+    else {
+      var comments = [];
+      for (var i = 0; i < result.length; i++) {
+        var comment = result[i];
+        comment.children = getChildrenComments(result, comment.id);
+        if (comment.parent_id == null) {
+          comments.push(comment);
+        }
+      }
+      res.json({status: "OK", data: comments});
+    }
+  });
+});
+
+app.post("/api/add-comment", (req, res) => {
+  var post_id = req.body.post_id;
+  var parent_id = req.body.parent_id;
+  var author = req.body.author;
+  var content = req.body.content;
+
+  var con = connectDB();
+  var sql = "INSERT INTO comments (post_id, parent_id, author, content) VALUES (?, ?, ?, ?);";
+  con.query(sql, [post_id, parent_id, author, content], function(err, result) {
     if (err) {
       res.json({status: "NOK", error: err.message});
     }
