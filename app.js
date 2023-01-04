@@ -132,7 +132,7 @@ app.get("/api/get-post/:slug", (req, res) => {
 function getChildrenComments(comments, parent_id) {
   var children = [];
   for (var i = 0; i < comments.length; i++) {
-    if (comments[i].parent_id == parent_id) {
+    if (comments[i].parent_id == parent_id && comments[i].parent_id != 0) {
       children.push(comments[i]);
     }
   }
@@ -153,7 +153,7 @@ app.get("/api/get-comments/:post_id", (req, res) => {
       for (var i = 0; i < result.length; i++) {
         var comment = result[i];
         comment.children = getChildrenComments(result, comment.id);
-        if (comment.parent_id == null) {
+        if (comment.parent_id == 0) {
           comments.push(comment);
         }
       }
