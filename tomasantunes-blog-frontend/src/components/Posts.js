@@ -29,7 +29,7 @@ export default function Posts() {
   }
 
   function deletePost(e) {
-    axios.post(config.BASE_URL + "/api/delete-post", {id: e.target.value})
+    axios.post(config.BASE_URL + "/api/delete-post", {post_id: e.target.value})
     .then((response) => {
       if (response.data.status == "OK") {
         alert("Post deleted successfully!");

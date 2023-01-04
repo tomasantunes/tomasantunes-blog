@@ -156,6 +156,21 @@ app.get("/api/get-post/:slug", (req, res) => {
   });
 });
 
+app.post("/api/delete-post", (req, res) => {
+  var post_id = req.body.post_id;
+
+  var con = connectDB();
+  var sql = "DELETE FROM posts WHERE id = ?;";
+  con.query(sql, [post_id], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err.message});
+    }
+    else {
+      res.json({status: "OK", data: result});
+    }
+  });
+});
+
 app.get("/api/get-post-by-id/:post_id", (req, res) => {
   var post_id = req.params.post_id;
 
