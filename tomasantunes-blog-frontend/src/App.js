@@ -7,6 +7,7 @@ import Admin from './components/Admin';
 import Login from './components/Login';
 import Posts from './components/Posts';
 import NewPost from './components/NewPost';
+import EditPost from './components/EditPost';
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/posts" element={<Posts />} />
         <Route path="/admin/new-post" element={<NewPost />} />
+        <Route path="/admin/edit-post/:post_id" element={<EditPost />} />
       </Routes>
     </Router>
   );

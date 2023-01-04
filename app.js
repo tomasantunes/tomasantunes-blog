@@ -69,6 +69,33 @@ app.get('/admin', (req, res) => {
   }
 });
 
+app.get('/admin/posts', (req, res) => {
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/admin/new-post', (req, res) => {
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
+app.get('/admin/edit-post/:post_id', (req, res) => {
+  if(req.session.isLoggedIn) {
+    res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
+  }
+  else {
+    res.redirect('/login');
+  }
+});
+
 // Backend routes
 app.post("/api/check-login", (req, res) => {
   var user = req.body.user;
@@ -124,7 +151,22 @@ app.get("/api/get-post/:slug", (req, res) => {
       res.json({status: "NOK", error: err.message});
     }
     else {
-      res.json({status: "OK", data: result});
+      res.json({status: "OK", data: result[0]});
+    }
+  });
+});
+
+app.get("/api/get-post-by-id/:post_id", (req, res) => {
+  var post_id = req.params.post_id;
+
+  var con = connectDB();
+  var sql = "SELECT * FROM posts WHERE id = ?;";
+  con.query(sql, [post_id], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err.message});
+    }
+    else {
+      res.json({status: "OK", data: result[0]});
     }
   });
 });

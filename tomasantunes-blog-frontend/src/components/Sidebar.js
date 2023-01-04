@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 export default function Sidebar() {
   return (
     <>
-        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style={{width: "280px", height: "100vh", float: "left"}}>
+        <div class="sidebar p-3 text-bg-dark" style={{position: "fixed", width: "280px", height: "100vh", left: "0", top: "0", bottom: "0", float: "left"}}>
             <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
             <span class="fs-4">Blog Administration</span>
             </a>
@@ -27,15 +27,6 @@ export default function Sidebar() {
                 </li>
             </ul>
             <hr />
-            <div class="dropdown">
-                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <strong>Menu</strong>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                    <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item" href="#">Log out</a></li>
-                </ul>
-            </div>
         </div>
     </>
   )
