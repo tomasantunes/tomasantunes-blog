@@ -66,8 +66,8 @@ export default function Posts() {
                         <tr>
                           <td>{post.title}</td>
                           <td>
-                            <button className="btn btn-success" value={post.id} onClick={editPost}>Edit</button>
-                            <button className="btn btn-danger" value={post.id} onClick={deletePost}>Delete</button>
+                            <button className="btn btn-success m-1" value={post.id} onClick={editPost}>Edit</button>
+                            <button className="btn btn-danger m-1" value={post.id} onClick={deletePost}>Delete</button>
                           </td>
                         </tr>
                       ))}
