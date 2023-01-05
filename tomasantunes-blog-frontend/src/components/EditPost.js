@@ -1,16 +1,16 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
 import Sidebar from './Sidebar';
 import axios from 'axios';
 import config from '../config.json';
 import {useParams} from 'react-router-dom';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 export default function EditPost() {
-  const editorRef = useRef(null);
   const [postId, setPostId] = useState();
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState();
   const params = useParams();
 
   function changeTitle(e) {
@@ -19,10 +19,6 @@ export default function EditPost() {
 
   function changeTags(e) {
     setTags(e.target.value);
-  }
-
-  function changeContent(e) {
-    setContent(e.target.value);
   }
 
   function requestUpdatePost(title, tags, content) {
@@ -64,9 +60,7 @@ export default function EditPost() {
   }
 
   const updatePost = () => {
-    if (editorRef.current) {
-      requestUpdatePost(title, tags, content);
-    }
+    requestUpdatePost(title, tags, content);
   };
 
   useEffect(() => {
@@ -87,25 +81,7 @@ export default function EditPost() {
           <label>Tags</label>
           <input type="text" className="form-control" value={tags} onChange={changeTags} />
         </div>
-        <Editor
-          onInit={(evt, editor) => editorRef.current = editor}
-          value={content}
-          onChange={changeContent}
-          init={{
-            height: 500,
-            menubar: false,
-            plugins: [
-              'advlist autolink lists link image charmap print preview anchor',
-              'searchreplace visualblocks code fullscreen',
-              'insertdatetime media table paste code help wordcount'
-            ],
-            toolbar: 'undo redo | formatselect | ' +
-            'bold italic backcolor | alignleft aligncenter ' +
-            'alignright alignjustify | bullist numlist outdent indent | ' +
-            'removeformat | help',
-            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-          }}
-        />
+        <ReactQuill theme="snow" value={content} onChange={setContent}/>
         <div style={{textAlign: "right", marginTop: "20px"}}>
           <button className="btn btn-primary" onClick={updatePost}>Save</button>
         </div>

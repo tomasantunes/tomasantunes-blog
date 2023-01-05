@@ -140,3 +140,15 @@ overflow-y: auto;
     left: 0;
     height: 100vh;
 }
+
+.post-editor-toolbar {
+    border: 1px solid black;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.post-editor {
+    border: 1px solid black !important;
+    padding: 10px !important;
+    margin-bottom: 10px !important;
+}
