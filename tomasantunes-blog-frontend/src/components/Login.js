@@ -32,6 +32,12 @@ export default function Login() {
     });
   }
 
+  const handleKeyDown = e => {
+    if (e.keyCode === 13) {
+      requestLogin();
+    }
+  };
+
   return (
     <div className="login-box">
       <div style={{textAlign: "center"}}>
@@ -39,11 +45,11 @@ export default function Login() {
       </div>
       <div className="form-group">
           <label>Username</label>
-          <input type="text" className="form-control" value={user} onChange={changeUser} />
+          <input type="text" className="form-control" value={user} onChange={changeUser} onKeyDown={handleKeyDown} />
       </div>
       <div className="form-group mb-4">
           <label>Password</label>
-          <input type="password" className="form-control" value={pass} onChange={changePass} />
+          <input type="password" className="form-control" value={pass} onChange={changePass} onKeyDown={handleKeyDown} />
       </div>
       <div style={{textAlign: "right"}}>
           <button className="btn btn-primary" onClick={requestLogin}>Login</button>
