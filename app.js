@@ -6,6 +6,8 @@ var logger = require('morgan');
 var session = require('express-session');
 var secretConfig = require('./secret-config.json');
 var mysql = require('mysql2');
+var fileUpload = require('express-fileupload');
+var fs = require('fs');
 
 var app = express();
 
@@ -21,6 +23,10 @@ app.use(session({
   secret: secretConfig.SESSION_KEY,
   resave: false,
   saveUninitialized: true
+}));
+
+app.use(fileUpload({
+  createParentPath: true
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -184,6 +190,35 @@ app.get("/api/get-post-by-id/:post_id", (req, res) => {
       res.json({status: "OK", data: result[0]});
     }
   });
+});
+
+app.post("/api/upload-image", (req, res) => {
+  if(!req.files) {
+    res.json({status: "NOK", error: "Ficheiro em falta."});
+    return;
+  }
+  var image = req.files.image;
+
+  var currentdate = new Date();
+  var fileNamePredecessor = currentdate.getDate().toString()+currentdate.getMonth().toString()+currentdate.getFullYear().toString()+currentdate.getTime().toString();
+  var filename = fileNamePredecessor + image.name;
+  var title = path.basename(filename);
+  image.mv('./media/' + filename);
+
+  var con = connectDB();
+  var sql = "INSERT INTO images (title, filename) VALUES (?, ?);";
+  con.query(sql, [title, filename], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err.message});
+    }
+    else {
+      res.json({status: "OK", data: {filename: filename, title: title}});
+    }
+  });
+});
+
+app.get("/api/get-file/:filename", (req, res) => {
+  res.sendFile(path.resolve(__dirname) + '/media/' + req.params.filename);
 });
 
 function getChildrenComments(comments, parent_id) {
