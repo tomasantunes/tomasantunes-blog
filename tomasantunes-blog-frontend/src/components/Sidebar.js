@@ -16,6 +16,11 @@ export default function Sidebar() {
                     </Link>
                 </li>
                 <li class="nav-item">
+                    <Link to="/" class="btn btn-primary btn-block" aria-current="page">
+                    Front Page
+                    </Link>
+                </li>
+                <li class="nav-item">
                     <Link to="/admin/posts" class="btn btn-primary btn-block" aria-current="page">
                     Posts
                     </Link>

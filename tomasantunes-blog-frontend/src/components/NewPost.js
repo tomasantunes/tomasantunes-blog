@@ -4,12 +4,14 @@ import axios from 'axios';
 import config from '../config.json';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import {useNavigate} from 'react-router-dom';
 
 export default function NewPost() {
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
   const [content, setContent] = useState();
   const quillRef = useRef();
+	const navigate = useNavigate();
 
   function changeTitle(e) {
 		setTitle(e.target.value);
@@ -29,6 +31,7 @@ export default function NewPost() {
 		.then((response) => {
 			if (response.data.status == "OK") {
 				alert("Post submitted successfully");
+				navigate('/admin/posts');
 			}
 			else {
 				alert(response.data.error);
@@ -121,7 +124,7 @@ export default function NewPost() {
 				<input type="text" className="form-control" value={tags} onChange={changeTags} />
 			</div>
 			
-		<ReactQuill
+			<ReactQuill
 				ref={quillRef}
 				value={content}
 				modules={modules}

@@ -34,10 +34,10 @@ app.use(express.static('tomasantunes-blog-frontend/build'));
 
 function connectDB() {
   var con = mysql.createConnection({
-      host: 'localhost',
-      user: 'root',
-      password: '',
-      database: 'tomasantunes_blog',
+      host: secretConfig.DB_HOST,
+      user: secretConfig.DB_USER,
+      password: secretConfig.DB_PASSWORD,
+      database: secretConfig.DB_NAME
   });
   con.connect(function(err) {
       if (err) {
@@ -138,6 +138,24 @@ app.post("/api/add-post", (req, res) => {
   var con = connectDB();
   var sql = "INSERT INTO posts (title, slug, content, tags) VALUES (?, ?, ?, ?);";
   con.query(sql, [title, slug, content, tags], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err.message});
+    }
+    else {
+      res.json({status: "OK", data: result});
+    }
+  });
+});
+
+app.post("/api/update-post", (req, res) => {
+  var postId = req.body.postId;
+  var title = req.body.title;
+  var content = req.body.content;
+  var tags = req.body.tags;
+
+  var con = connectDB();
+  var sql = "UPDATE posts SET title = ?, content = ?, tags = ? WHERE id = ?;";
+  con.query(sql, [title, content, tags, postId], function(err, result) {
     if (err) {
       res.json({status: "NOK", error: err.message});
     }
