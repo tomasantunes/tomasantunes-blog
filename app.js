@@ -8,6 +8,7 @@ var secretConfig = require('./secret-config.json');
 var mysql = require('mysql2');
 var fileUpload = require('express-fileupload');
 var fs = require('fs');
+var escape = require('escape-html');
 
 var app = express();
 
@@ -306,6 +307,7 @@ app.get("/api/get-comments/:post_id", (req, res) => {
           comments.push(comment);
         }
       }
+      console.log(comments);
       res.json({status: "OK", data: comments});
     }
     closeConnection(con);
@@ -316,7 +318,7 @@ app.post("/api/add-comment", (req, res) => {
   var post_id = req.body.post_id;
   var parent_id = req.body.parent_id;
   var author = req.body.author;
-  var content = req.body.content;
+  var content = escape(req.body.content);
 
   var con = connectDB();
   var sql = "INSERT INTO comments (post_id, parent_id, author, content) VALUES (?, ?, ?, ?);";
