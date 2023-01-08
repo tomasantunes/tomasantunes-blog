@@ -202,3 +202,7 @@ overflow-y: auto;
 .comment-replies {
     margin-left: 50px;
 }
+
+.comment-form {
+    margin-bottom: 20px;
+}
