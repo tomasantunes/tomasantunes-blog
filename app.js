@@ -49,8 +49,22 @@ function connectDB() {
   return con;
 }
 
+function closeConnection(con) {
+	con.end(function(err) {
+		if (err) {
+			console.log("MySQL is not connected.");
+			throw err;
+		}
+		console.log("MySQL connection closed.");
+	});
+}
+
 // Frontend routes
 app.get('/', (req,res) => {
+  res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
+});
+
+app.get('/blog-post/:slug', (req,res) => {
   res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
 });
 
@@ -59,6 +73,10 @@ app.get('/about', (req, res) => {
 });
 
 app.get('/contact', (req, res) => {
+  res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
+});
+
+app.get('/search-results/:query', (req, res) => {
   res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
 });
 
@@ -126,6 +144,22 @@ app.get("/api/get-posts", (req, res) => {
     else {
       res.json({status: "OK", data: result});
     }
+    closeConnection(con);
+  });
+});
+
+app.get("/api/search/:query", (req, res) => {
+  var query = req.params.query;
+  var con = connectDB();
+  var sql = "SELECT * FROM posts WHERE title LIKE '%" + query + "%' OR content LIKE '%" + query + "%' OR tags LIKE '%" + query + "%';";
+  con.query(sql, function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err.message});
+    }
+    else {
+      res.json({status: "OK", data: result});
+    }
+    closeConnection(con);
   });
 });
 
@@ -144,6 +178,7 @@ app.post("/api/add-post", (req, res) => {
     else {
       res.json({status: "OK", data: result});
     }
+    closeConnection(con);
   });
 });
 
@@ -162,10 +197,11 @@ app.post("/api/update-post", (req, res) => {
     else {
       res.json({status: "OK", data: result});
     }
+    closeConnection(con);
   });
 });
 
-app.get("/api/get-post/:slug", (req, res) => {
+app.get("/api/get-post-by-slug/:slug", (req, res) => {
   var slug = req.params.slug;
 
   var con = connectDB();
@@ -177,6 +213,7 @@ app.get("/api/get-post/:slug", (req, res) => {
     else {
       res.json({status: "OK", data: result[0]});
     }
+    closeConnection(con);
   });
 });
 
@@ -207,6 +244,7 @@ app.get("/api/get-post-by-id/:post_id", (req, res) => {
     else {
       res.json({status: "OK", data: result[0]});
     }
+    closeConnection(con);
   });
 });
 
@@ -232,6 +270,7 @@ app.post("/api/upload-image", (req, res) => {
     else {
       res.json({status: "OK", data: {filename: filename, title: title}});
     }
+    closeConnection(con);
   });
 });
 
@@ -269,6 +308,7 @@ app.get("/api/get-comments/:post_id", (req, res) => {
       }
       res.json({status: "OK", data: comments});
     }
+    closeConnection(con);
   });
 });
 
@@ -287,6 +327,7 @@ app.post("/api/add-comment", (req, res) => {
     else {
       res.json({status: "OK", data: result});
     }
+    closeConnection(con);
   });
 });
 

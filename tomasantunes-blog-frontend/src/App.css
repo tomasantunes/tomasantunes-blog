@@ -177,3 +177,16 @@ overflow-y: auto;
     max-height: 150px;
     overflow-y: hidden;
 }
+
+.social-media-icons {
+    font-size: 45px;
+}
+
+.social-media-icons a {
+    margin-right: 15px;
+}
+
+.post-header a, .post-header a:visited, .post-header a:active, .post-header a:hover, .post-header a:focus {
+    color: #444;
+    text-decoration:none;
+}
