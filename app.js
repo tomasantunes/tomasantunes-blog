@@ -8,7 +8,7 @@ var secretConfig = require('./secret-config.json');
 var mysql = require('mysql2');
 var fileUpload = require('express-fileupload');
 var fs = require('fs');
-var escape = require('escape-html');
+var escape = require('escape-html');
 
 var app = express();
 
@@ -33,32 +33,13 @@ app.use(fileUpload({
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('tomasantunes-blog-frontend/build'));
 
-function connectDB() {
-  var con = mysql.createConnection({
+var con = mysql.createPool({
+      connectionLimit : 90,
       host: secretConfig.DB_HOST,
       user: secretConfig.DB_USER,
       password: secretConfig.DB_PASSWORD,
-      database: secretConfig.DB_NAME
-  });
-  con.connect(function(err) {
-      if (err) {
-          console.log("MySQL is not connected.");
-          throw err;
-      }
-      console.log("Connected to MySQL!");
-  });
-  return con;
-}
-
-function closeConnection(con) {
-	con.end(function(err) {
-		if (err) {
-			console.log("MySQL is not connected.");
-			throw err;
-		}
-		console.log("MySQL connection closed.");
-	});
-}
+      database: secretConfig.DB_NAME,
+});
 
 // Frontend routes
 app.get('/', (req,res) => {
@@ -136,8 +117,7 @@ app.post("/api/check-login", (req, res) => {
 });
 
 app.get("/api/get-posts", (req, res) => {
-  var con = connectDB();
-  var sql = "SELECT * FROM posts;";
+  var sql = "SELECT * FROM posts ORDER BY id DESC;";
   con.query(sql, function(err, result) {
     if (err) {
       res.json({status: "NOK", error: err.message});
@@ -145,13 +125,11 @@ app.get("/api/get-posts", (req, res) => {
     else {
       res.json({status: "OK", data: result});
     }
-    closeConnection(con);
   });
 });
 
 app.get("/api/search/:query", (req, res) => {
   var query = req.params.query;
-  var con = connectDB();
   var sql = "SELECT * FROM posts WHERE title LIKE '%" + query + "%' OR content LIKE '%" + query + "%' OR tags LIKE '%" + query + "%';";
   con.query(sql, function(err, result) {
     if (err) {
@@ -160,7 +138,6 @@ app.get("/api/search/:query", (req, res) => {
     else {
       res.json({status: "OK", data: result});
     }
-    closeConnection(con);
   });
 });
 
@@ -170,7 +147,6 @@ app.post("/api/add-post", (req, res) => {
   var tags = req.body.tags;
   var slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
 
-  var con = connectDB();
   var sql = "INSERT INTO posts (title, slug, content, tags) VALUES (?, ?, ?, ?);";
   con.query(sql, [title, slug, content, tags], function(err, result) {
     if (err) {
@@ -179,7 +155,6 @@ app.post("/api/add-post", (req, res) => {
     else {
       res.json({status: "OK", data: result});
     }
-    closeConnection(con);
   });
 });
 
@@ -189,7 +164,6 @@ app.post("/api/update-post", (req, res) => {
   var content = req.body.content;
   var tags = req.body.tags;
 
-  var con = connectDB();
   var sql = "UPDATE posts SET title = ?, content = ?, tags = ? WHERE id = ?;";
   con.query(sql, [title, content, tags, postId], function(err, result) {
     if (err) {
@@ -198,14 +172,12 @@ app.post("/api/update-post", (req, res) => {
     else {
       res.json({status: "OK", data: result});
     }
-    closeConnection(con);
   });
 });
 
 app.get("/api/get-post-by-slug/:slug", (req, res) => {
   var slug = req.params.slug;
 
-  var con = connectDB();
   var sql = "SELECT * FROM posts WHERE slug = ?;";
   con.query(sql, [slug], function(err, result) {
     if (err) {
@@ -214,14 +186,12 @@ app.get("/api/get-post-by-slug/:slug", (req, res) => {
     else {
       res.json({status: "OK", data: result[0]});
     }
-    closeConnection(con);
   });
 });
 
 app.post("/api/delete-post", (req, res) => {
   var post_id = req.body.post_id;
 
-  var con = connectDB();
   var sql = "DELETE FROM posts WHERE id = ?;";
   con.query(sql, [post_id], function(err, result) {
     if (err) {
@@ -236,7 +206,6 @@ app.post("/api/delete-post", (req, res) => {
 app.get("/api/get-post-by-id/:post_id", (req, res) => {
   var post_id = req.params.post_id;
 
-  var con = connectDB();
   var sql = "SELECT * FROM posts WHERE id = ?;";
   con.query(sql, [post_id], function(err, result) {
     if (err) {
@@ -245,7 +214,6 @@ app.get("/api/get-post-by-id/:post_id", (req, res) => {
     else {
       res.json({status: "OK", data: result[0]});
     }
-    closeConnection(con);
   });
 });
 
@@ -262,7 +230,6 @@ app.post("/api/upload-image", (req, res) => {
   var title = path.basename(filename);
   image.mv('./media/' + filename);
 
-  var con = connectDB();
   var sql = "INSERT INTO images (title, filename) VALUES (?, ?);";
   con.query(sql, [title, filename], function(err, result) {
     if (err) {
@@ -271,7 +238,6 @@ app.post("/api/upload-image", (req, res) => {
     else {
       res.json({status: "OK", data: {filename: filename, title: title}});
     }
-    closeConnection(con);
   });
 });
 
@@ -292,7 +258,6 @@ function getChildrenComments(comments, parent_id) {
 app.get("/api/get-comments/:post_id", (req, res) => {
   var post_id = req.params.post_id;
 
-  var con = connectDB();
   var sql = "SELECT * FROM comments WHERE post_id = ?;";
   con.query(sql, [post_id], function(err, result) {
     if (err) {
@@ -310,7 +275,6 @@ app.get("/api/get-comments/:post_id", (req, res) => {
       console.log(comments);
       res.json({status: "OK", data: comments});
     }
-    closeConnection(con);
   });
 });
 
@@ -320,7 +284,6 @@ app.post("/api/add-comment", (req, res) => {
   var author = req.body.author;
   var content = escape(req.body.content);
 
-  var con = connectDB();
   var sql = "INSERT INTO comments (post_id, parent_id, author, content) VALUES (?, ?, ?, ?);";
   con.query(sql, [post_id, parent_id, author, content], function(err, result) {
     if (err) {
@@ -329,7 +292,6 @@ app.post("/api/add-comment", (req, res) => {
     else {
       res.json({status: "OK", data: result});
     }
-    closeConnection(con);
   });
 });
 

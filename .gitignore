@@ -1,4 +1,5 @@
 node_modules
 media
 medium
+database/tomasantunes_blog.sql
 secret-config.json
