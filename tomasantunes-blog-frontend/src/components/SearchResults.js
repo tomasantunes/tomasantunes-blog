@@ -4,6 +4,7 @@ import axios from 'axios';
 import {useParams} from 'react-router-dom';
 import config from '../config.json';
 import {Link} from 'react-router-dom';
+import {Helmet} from "react-helmet";
 
 export default function SearchResults() {
 	const [query, setQuery] = useState("");
@@ -32,6 +33,10 @@ export default function SearchResults() {
 
   return (
     <>
+			<Helmet>
+          <title>Search Results</title>
+          <meta name="keywords" content="tomás antunes, blog, search, results, query, pages"/>
+      </Helmet>
 			<Navbar />
 			<div className="container">
 				<h2>Search Results for "{query}"</h2>

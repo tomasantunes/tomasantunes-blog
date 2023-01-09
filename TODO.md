@@ -2,5 +2,5 @@
 
 - Create page visit counter.
 - Create dashboard page.
-- Add meta keywords.
-- Add favicon.
+- Create new field on posts with summary.
+- Create new field on posts with preview image.

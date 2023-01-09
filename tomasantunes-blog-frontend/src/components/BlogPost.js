@@ -4,6 +4,7 @@ import {useParams} from 'react-router-dom';
 import Navbar from './Navbar';
 import config from '../config.json';
 import Comment from './Comment';
+import { Helmet } from "react-helmet";
 
 export default function BlogPost() {
   const params = useParams();
@@ -93,6 +94,10 @@ export default function BlogPost() {
 
   return (
 		<>
+			<Helmet>
+          <title>{title}</title>
+          <meta name="keywords" content={tags} />
+      </Helmet>
 			<Navbar />
     	<div className="container">
 				<div className="post">

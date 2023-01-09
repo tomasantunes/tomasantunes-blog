@@ -1,9 +1,14 @@
 import React from 'react';
 import NavBar from './Navbar';
+import { Helmet } from "react-helmet";
 
 export default function Contact() {
   return (
     <>
+      <Helmet>
+          <title>Tomás Antunes - Contact</title>
+          <meta name="keywords" content="tomás antunes, blog, contact, e-mail, facebook, linkedin"/>
+      </Helmet>
       <NavBar />
       <div className="container">
         <h2>Contact</h2>

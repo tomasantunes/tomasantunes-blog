@@ -5,6 +5,7 @@ import config from '../config.json';
 import {Link} from 'react-router-dom';
 import cheerio from 'cheerio';
 import ReactPaginate from 'react-paginate';
+import { Helmet } from "react-helmet";
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
@@ -49,6 +50,11 @@ export default function Blog() {
   }, [page]);
   return (
     <>
+      <Helmet>
+          <title>Tomás Antunes - Blog</title>
+          <meta name="description" content="Tomás Antunes Blog - A personal journal and collection of stories" />
+          <meta name="keywords" content="tomás antunes, blog, writing, stories, articles, technology, fiction, self-help, art, web development, programming"/>
+      </Helmet>
       <Navbar />
       <div className="container">
         <h1>Blog</h1>
