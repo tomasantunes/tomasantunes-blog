@@ -1,6 +1,7 @@
 import React from 'react';
 import NavBar from './Navbar';
 import { Helmet } from "react-helmet";
+import Footer from './Footer';
 
 export default function Contact() {
   return (
@@ -18,6 +19,7 @@ export default function Contact() {
           <a href="https://www.linkedin.com/in/tomasantunes/"><i class="fa-brands fa-linkedin"></i></a>
         </div>
       </div>
+      <Footer />
     </>
   )
 }

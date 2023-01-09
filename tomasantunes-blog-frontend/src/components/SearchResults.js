@@ -5,6 +5,7 @@ import {useParams} from 'react-router-dom';
 import config from '../config.json';
 import {Link} from 'react-router-dom';
 import {Helmet} from "react-helmet";
+import Footer from './Footer';
 
 export default function SearchResults() {
 	const [query, setQuery] = useState("");
@@ -57,6 +58,7 @@ export default function SearchResults() {
 					</tbody>
 				</table>
 			</div>
+			<Footer />
     </>
   )
 }

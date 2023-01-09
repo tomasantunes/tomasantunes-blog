@@ -26,4 +26,18 @@ CREATE TABLE comments (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+
+CREATE TABLE analytics (
+  id int(20) NOT NULL,
+  page_url varchar(150) NOT NULL,
+  entry_time datetime NOT NULL,
+  exit_time datetime DEFAULT NULL,
+  ip_address varchar(30) NOT NULL,
+  country varchar(50) NOT NULL,
+  operating_system varchar(20) NOT NULL,
+  browser varchar(20) NOT NULL,
+  browser_version varchar(20) NOT NULL,
+  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 ALTER TABLE posts MODIFY COLUMN content LONGTEXT; 

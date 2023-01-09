@@ -6,6 +6,7 @@ import {Link} from 'react-router-dom';
 import cheerio from 'cheerio';
 import ReactPaginate from 'react-paginate';
 import { Helmet } from "react-helmet";
+import Footer from './Footer';
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
@@ -81,7 +82,7 @@ export default function Blog() {
           activeClassName={"navigationActive"}
         />
       </div>
-      
+      <Footer />
     </>
   )
 }

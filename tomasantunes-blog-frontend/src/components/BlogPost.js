@@ -5,6 +5,7 @@ import Navbar from './Navbar';
 import config from '../config.json';
 import Comment from './Comment';
 import { Helmet } from "react-helmet";
+import Footer from './Footer';
 
 export default function BlogPost() {
   const params = useParams();
@@ -126,6 +127,7 @@ export default function BlogPost() {
 					))}
 				</div>
 			</div>
+			<Footer />
 		</>
   )
 }
