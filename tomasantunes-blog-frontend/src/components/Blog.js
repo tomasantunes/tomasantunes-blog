@@ -4,21 +4,32 @@ import axios from 'axios';
 import config from '../config.json';
 import {Link} from 'react-router-dom';
 import cheerio from 'cheerio';
+import ReactPaginate from 'react-paginate';
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
+  const [page, setPage] = useState(0);
+  const postsPerPage = 10;
+  const [totalPages, setTotalPages] = useState(0);
 
   function loadPosts() {
-    axios.get(config.BASE_URL + '/api/get-posts')
+    axios.get(config.BASE_URL + '/api/get-posts', {
+      params: {
+        offset: page * postsPerPage, 
+        limit: postsPerPage
+      }
+    })
     .then((response) => {
       if (response.data.status == "OK") {
         var posts_arr = [];
-        for (var i in response.data.data) {
-          const $ = cheerio.load(response.data.data[i].content);
+        console.log(response.data.data.posts);
+        for (var i in response.data.data.posts) {
+          const $ = cheerio.load(response.data.data.posts[i].content);
           $('img').remove();
-          posts_arr.push({...response.data.data[i], content: $('*').html()})
+          posts_arr.push({...response.data.data.posts[i], content: $('*').html()})
         }
         setPosts(posts_arr);
+        setTotalPages(Math.ceil(response.data.data.count / postsPerPage));
       }
       else {
         alert(response.data.error);
@@ -29,9 +40,13 @@ export default function Blog() {
     });
   }
 
+  function changePage({ selected }) {
+    setPage(selected);
+  }
+
   useEffect(() => {
     loadPosts();
-  }, []);
+  }, [page]);
   return (
     <>
       <Navbar />
@@ -48,6 +63,12 @@ export default function Blog() {
             <hr/>
           </div>
         ))}
+        <ReactPaginate
+          previousLabel={"Previous"}
+          nextLabel={"Next"}
+          pageCount={totalPages}
+          onPageChange={changePage}
+        />
       </div>
       
     </>

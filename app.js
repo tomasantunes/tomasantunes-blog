@@ -117,13 +117,20 @@ app.post("/api/check-login", (req, res) => {
 });
 
 app.get("/api/get-posts", (req, res) => {
-  var sql = "SELECT * FROM posts ORDER BY id DESC;";
-  con.query(sql, function(err, result) {
+  var offset = req.query.offset;
+  var limit = req.query.limit;
+  var sql = "SELECT * FROM posts ORDER BY id DESC LIMIT ? OFFSET ?;";
+  var sql2 = "SELECT COUNT(*) AS countresult FROM posts;";
+  con.query(sql, [Number(limit), Number(offset)], function(err, result) {
     if (err) {
       res.json({status: "NOK", error: err.message});
     }
     else {
-      res.json({status: "OK", data: result});
+      console.log(result);
+      con.query(sql2, function(err2, result2) {
+        console.log(result);
+        res.json({status: "OK", data: {posts: result, count: result2[0].countresult}});
+      });
     }
   });
 });
@@ -142,37 +149,47 @@ app.get("/api/search/:query", (req, res) => {
 });
 
 app.post("/api/add-post", (req, res) => {
-  var title = req.body.title;
-  var content = req.body.content;
-  var tags = req.body.tags;
-  var slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+  if (req.session.isLoggedIn) {
+    var title = req.body.title;
+    var content = req.body.content;
+    var tags = req.body.tags;
+    var slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
 
-  var sql = "INSERT INTO posts (title, slug, content, tags) VALUES (?, ?, ?, ?);";
-  con.query(sql, [title, slug, content, tags], function(err, result) {
-    if (err) {
-      res.json({status: "NOK", error: err.message});
-    }
-    else {
-      res.json({status: "OK", data: result});
-    }
-  });
+    var sql = "INSERT INTO posts (title, slug, content, tags) VALUES (?, ?, ?, ?);";
+    con.query(sql, [title, slug, content, tags], function(err, result) {
+      if (err) {
+        res.json({status: "NOK", error: err.message});
+      }
+      else {
+        res.json({status: "OK", data: result});
+      }
+    });
+  }
+  else {
+    res.json({status: "NOK", error: "You are not logged in."});
+  }
 });
 
 app.post("/api/update-post", (req, res) => {
-  var postId = req.body.postId;
-  var title = req.body.title;
-  var content = req.body.content;
-  var tags = req.body.tags;
+  if (req.session.isLoggedIn) {
+    var postId = req.body.postId;
+    var title = req.body.title;
+    var content = req.body.content;
+    var tags = req.body.tags;
 
-  var sql = "UPDATE posts SET title = ?, content = ?, tags = ? WHERE id = ?;";
-  con.query(sql, [title, content, tags, postId], function(err, result) {
-    if (err) {
-      res.json({status: "NOK", error: err.message});
-    }
-    else {
-      res.json({status: "OK", data: result});
-    }
-  });
+    var sql = "UPDATE posts SET title = ?, content = ?, tags = ? WHERE id = ?;";
+    con.query(sql, [title, content, tags, postId], function(err, result) {
+      if (err) {
+        res.json({status: "NOK", error: err.message});
+      }
+      else {
+        res.json({status: "OK", data: result});
+      }
+    });
+  }
+  else {
+    res.json({status: "NOK", error: "You are not logged in."});
+  }
 });
 
 app.get("/api/get-post-by-slug/:slug", (req, res) => {
@@ -190,17 +207,22 @@ app.get("/api/get-post-by-slug/:slug", (req, res) => {
 });
 
 app.post("/api/delete-post", (req, res) => {
-  var post_id = req.body.post_id;
+  if (req.session.isLoggedIn) {
+    var post_id = req.body.post_id;
 
-  var sql = "DELETE FROM posts WHERE id = ?;";
-  con.query(sql, [post_id], function(err, result) {
-    if (err) {
-      res.json({status: "NOK", error: err.message});
-    }
-    else {
-      res.json({status: "OK", data: result});
-    }
-  });
+    var sql = "DELETE FROM posts WHERE id = ?;";
+    con.query(sql, [post_id], function(err, result) {
+      if (err) {
+        res.json({status: "NOK", error: err.message});
+      }
+      else {
+        res.json({status: "OK", data: result});
+      }
+    });
+  }
+  else {
+    res.json({status: "NOK", error: "You are not logged in."});
+  }
 });
 
 app.get("/api/get-post-by-id/:post_id", (req, res) => {
@@ -218,27 +240,32 @@ app.get("/api/get-post-by-id/:post_id", (req, res) => {
 });
 
 app.post("/api/upload-image", (req, res) => {
-  if(!req.files) {
-    res.json({status: "NOK", error: "Ficheiro em falta."});
-    return;
+  if (req.session.isLoggedIn) {
+    if(!req.files) {
+      res.json({status: "NOK", error: "Ficheiro em falta."});
+      return;
+    }
+    var image = req.files.image;
+
+    var currentdate = new Date();
+    var fileNamePredecessor = currentdate.getDate().toString()+currentdate.getMonth().toString()+currentdate.getFullYear().toString()+currentdate.getTime().toString();
+    var filename = fileNamePredecessor + image.name;
+    var title = path.basename(filename);
+    image.mv('./media/' + filename);
+
+    var sql = "INSERT INTO images (title, filename) VALUES (?, ?);";
+    con.query(sql, [title, filename], function(err, result) {
+      if (err) {
+        res.json({status: "NOK", error: err.message});
+      }
+      else {
+        res.json({status: "OK", data: {filename: filename, title: title}});
+      }
+    });
   }
-  var image = req.files.image;
-
-  var currentdate = new Date();
-  var fileNamePredecessor = currentdate.getDate().toString()+currentdate.getMonth().toString()+currentdate.getFullYear().toString()+currentdate.getTime().toString();
-  var filename = fileNamePredecessor + image.name;
-  var title = path.basename(filename);
-  image.mv('./media/' + filename);
-
-  var sql = "INSERT INTO images (title, filename) VALUES (?, ?);";
-  con.query(sql, [title, filename], function(err, result) {
-    if (err) {
-      res.json({status: "NOK", error: err.message});
-    }
-    else {
-      res.json({status: "OK", data: {filename: filename, title: title}});
-    }
-  });
+  else {
+    res.json({status: "NOK", error: "You are not logged in."});
+  }
 });
 
 app.get("/api/get-file/:filename", (req, res) => {
