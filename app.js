@@ -135,6 +135,19 @@ app.get("/api/get-posts", (req, res) => {
   });
 });
 
+app.get("/api/get-all-posts", (req, res) => {
+  var sql = "SELECT * FROM posts ORDER BY id DESC;";
+  con.query(sql, function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err.message});
+    }
+    else {
+      console.log(result);
+      res.json({status: "OK", data: result});
+    }
+  });
+});
+
 app.get("/api/search/:query", (req, res) => {
   var query = req.params.query;
   var sql = "SELECT * FROM posts WHERE title LIKE '%" + query + "%' OR content LIKE '%" + query + "%' OR tags LIKE '%" + query + "%';";

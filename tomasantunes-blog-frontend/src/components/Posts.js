@@ -12,7 +12,7 @@ export default function Posts() {
 
   function loadPosts() {
     setPosts([]);
-    axios.get(config.BASE_URL + '/api/get-posts')
+    axios.get(config.BASE_URL + '/api/get-all-posts')
     .then((response) => {
       if (response.data.status == "OK") {
         setPosts(response.data.data);

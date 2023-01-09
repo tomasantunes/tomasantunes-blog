@@ -68,6 +68,11 @@ export default function Blog() {
           nextLabel={"Next"}
           pageCount={totalPages}
           onPageChange={changePage}
+          containerClassName={"navigationButtons"}
+          previousLinkClassName={"previousButton"}
+          nextLinkClassName={"nextButton"}
+          disabledClassName={"navigationDisabled"}
+          activeClassName={"navigationActive"}
         />
       </div>
       
