@@ -48,8 +48,8 @@ var con = mysql.createPool({
 });
 
 // Analytics routes
-function analytics(req, res) {
-  var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+app.get("/api/analytics/page-entry", (req, res) => {
+  var fullUrl = req.query.fullUrl;
   var dt = new Date().toISOString().slice(0, 19).replace('T', ' ');
   var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   if (ip.substr(0, 7) == "::ffff:") {
@@ -70,7 +70,7 @@ function analytics(req, res) {
       console.log(err);
     }
   });
-}
+});
 
 app.get("/api/analytics/exit-page", (req, res) => {
   var fullUrl = req.query.fullUrl;
@@ -97,37 +97,30 @@ app.get("/api/analytics/exit-page", (req, res) => {
 
 // Frontend routes
 app.get('/', (req,res) => {
-  analytics(req, res);
   res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
 });
 
 app.get('/blog-post/:slug', (req,res) => {
-  analytics(req, res);
   res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
 });
 
 app.get('/about', (req, res) => {
-  analytics(req, res);
   res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
 });
 
 app.get('/contact', (req, res) => {
-  analytics(req, res);
   res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
 });
 
 app.get('/search-results/:query', (req, res) => {
-  analytics(req, res);
   res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
 });
 
 app.get('/login', (req, res) => {
-  analytics(req, res);
   res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
 });
 
 app.get('/admin', (req, res) => {
-  analytics(req, res);
   if(req.session.isLoggedIn) {
     res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
   }
@@ -137,7 +130,6 @@ app.get('/admin', (req, res) => {
 });
 
 app.get('/admin/posts', (req, res) => {
-  analytics(req, res);
   if(req.session.isLoggedIn) {
     res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
   }
@@ -147,7 +139,6 @@ app.get('/admin/posts', (req, res) => {
 });
 
 app.get('/admin/new-post', (req, res) => {
-  analytics(req, res);
   if(req.session.isLoggedIn) {
     res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
   }
@@ -157,7 +148,6 @@ app.get('/admin/new-post', (req, res) => {
 });
 
 app.get('/admin/edit-post/:post_id', (req, res) => {
-  analytics(req, res);
   if(req.session.isLoggedIn) {
     res.sendFile(path.resolve(__dirname) + '/tomasantunes-blog-frontend/build/index.html');
   }
@@ -168,7 +158,6 @@ app.get('/admin/edit-post/:post_id', (req, res) => {
 
 // Backend routes
 app.post("/api/check-login", (req, res) => {
-  analytics(req, res);
   var user = req.body.user;
   var pass = req.body.pass;
   
@@ -182,7 +171,6 @@ app.post("/api/check-login", (req, res) => {
 });
 
 app.get("/api/get-posts", (req, res) => {
-  analytics(req, res);
   var offset = req.query.offset;
   var limit = req.query.limit;
   var sql = "SELECT * FROM posts ORDER BY id DESC LIMIT ? OFFSET ?;";
@@ -202,7 +190,6 @@ app.get("/api/get-posts", (req, res) => {
 });
 
 app.get("/api/get-all-posts", (req, res) => {
-  analytics(req, res);
   var sql = "SELECT * FROM posts ORDER BY id DESC;";
   con.query(sql, function(err, result) {
     if (err) {
@@ -216,7 +203,6 @@ app.get("/api/get-all-posts", (req, res) => {
 });
 
 app.get("/api/search/:query", (req, res) => {
-  analytics(req, res);
   var query = req.params.query;
   var sql = "SELECT * FROM posts WHERE title LIKE '%" + query + "%' OR content LIKE '%" + query + "%' OR tags LIKE '%" + query + "%';";
   con.query(sql, function(err, result) {
@@ -230,7 +216,6 @@ app.get("/api/search/:query", (req, res) => {
 });
 
 app.post("/api/add-post", (req, res) => {
-  analytics(req, res);
   if (req.session.isLoggedIn) {
     var title = req.body.title;
     var content = req.body.content;
@@ -253,7 +238,6 @@ app.post("/api/add-post", (req, res) => {
 });
 
 app.post("/api/update-post", (req, res) => {
-  analytics(req, res);
   if (req.session.isLoggedIn) {
     var postId = req.body.postId;
     var title = req.body.title;
@@ -276,7 +260,6 @@ app.post("/api/update-post", (req, res) => {
 });
 
 app.get("/api/get-post-by-slug/:slug", (req, res) => {
-  analytics(req, res);
   var slug = req.params.slug;
 
   var sql = "SELECT * FROM posts WHERE slug = ?;";
@@ -291,7 +274,6 @@ app.get("/api/get-post-by-slug/:slug", (req, res) => {
 });
 
 app.post("/api/delete-post", (req, res) => {
-  analytics(req, res);
   if (req.session.isLoggedIn) {
     var post_id = req.body.post_id;
 
@@ -311,7 +293,6 @@ app.post("/api/delete-post", (req, res) => {
 });
 
 app.get("/api/get-post-by-id/:post_id", (req, res) => {
-  analytics(req, res);
   var post_id = req.params.post_id;
 
   var sql = "SELECT * FROM posts WHERE id = ?;";
@@ -326,7 +307,6 @@ app.get("/api/get-post-by-id/:post_id", (req, res) => {
 });
 
 app.post("/api/upload-image", (req, res) => {
-  analytics(req, res);
   if (req.session.isLoggedIn) {
     if(!req.files) {
       res.json({status: "NOK", error: "Ficheiro em falta."});
@@ -356,12 +336,10 @@ app.post("/api/upload-image", (req, res) => {
 });
 
 app.get("/api/get-file/:filename", (req, res) => {
-  analytics(req, res);
   res.sendFile(path.resolve(__dirname) + '/media/' + req.params.filename);
 });
 
 function getChildrenComments(comments, parent_id) {
-  analytics(req, res);
   var children = [];
   for (var i = 0; i < comments.length; i++) {
     if (comments[i].parent_id == parent_id && comments[i].parent_id != 0) {
@@ -372,7 +350,6 @@ function getChildrenComments(comments, parent_id) {
 }
 
 app.get("/api/get-comments/:post_id", (req, res) => {
-  analytics(req, res);
   var post_id = req.params.post_id;
 
   var sql = "SELECT * FROM comments WHERE post_id = ?;";
@@ -396,7 +373,6 @@ app.get("/api/get-comments/:post_id", (req, res) => {
 });
 
 app.post("/api/add-comment", (req, res) => {
-  analytics(req, res);
   var post_id = req.body.post_id;
   var parent_id = req.body.parent_id;
   var author = req.body.author;

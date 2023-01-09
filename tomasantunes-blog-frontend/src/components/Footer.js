@@ -1,10 +1,18 @@
-import React, {useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import config from '../config.json';
 
 export default function Footer() {
+	const [pageEntryDone, setPageEntryDone] = useState(false);
 	useEffect(() => {
-		// Log page exit
+		// Log page entry
+		if (!pageEntryDone) {
+			var fullUrl = window.location.href;
+			axios.get(config.BASE_URL + "/api/analytics/page-entry?fullUrl=" + fullUrl);
+			setPageEntryDone(true);
+		}
+
+		// Log page exit. NOTE: AdBlockers may block this.
     document.addEventListener('visibilitychange', function exitPage() {
 			var fullUrl = window.location.href;
 			if (document.visibilityState == "hidden") {
