@@ -5,10 +5,16 @@ import config from '../config.json';
 export default function Footer() {
 	const [pageEntryDone, setPageEntryDone] = useState(false);
 	useEffect(() => {
-		// Log page entry
+		// Log page entry. NOTE: AdBlockers may block this.
 		if (!pageEntryDone) {
 			var fullUrl = window.location.href;
-			axios.get(config.BASE_URL + "/api/analytics/page-entry?fullUrl=" + fullUrl);
+			axios.get(config.BASE_URL + "/api/analytics/page-entry?fullUrl=" + fullUrl)
+			.then(function (response) {
+				console.log(response.data);
+			})
+			.catch(function (err) {
+				console.log(err.message);
+			});
 			setPageEntryDone(true);
 		}
 

@@ -28,7 +28,7 @@ CREATE TABLE comments (
 
 
 CREATE TABLE analytics (
-  id int(20) NOT NULL,
+  id int(20) AUTO_INCREMENT PRIMARY KEY,
   page_url varchar(150) NOT NULL,
   entry_time datetime NOT NULL,
   exit_time datetime DEFAULT NULL,

@@ -180,9 +180,7 @@ app.get("/api/get-posts", (req, res) => {
       res.json({status: "NOK", error: err.message});
     }
     else {
-      console.log(result);
       con.query(sql2, function(err2, result2) {
-        console.log(result);
         res.json({status: "OK", data: {posts: result, count: result2[0].countresult}});
       });
     }
@@ -375,7 +373,7 @@ app.get("/api/get-comments/:post_id", (req, res) => {
 app.post("/api/add-comment", (req, res) => {
   var post_id = req.body.post_id;
   var parent_id = req.body.parent_id;
-  var author = req.body.author;
+  var author = escape(req.body.author);
   var content = escape(req.body.content);
 
   var sql = "INSERT INTO comments (post_id, parent_id, author, content) VALUES (?, ?, ?, ?);";
