@@ -194,7 +194,6 @@ app.get("/api/get-all-posts", (req, res) => {
       res.json({status: "NOK", error: err.message});
     }
     else {
-      console.log(result);
       res.json({status: "OK", data: result});
     }
   });
@@ -218,14 +217,31 @@ app.post("/api/add-post", (req, res) => {
     var title = req.body.title;
     var content = req.body.content;
     var tags = req.body.tags;
+    var summary = req.body.summary;
     var slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
 
-    var sql = "INSERT INTO posts (title, slug, content, tags) VALUES (?, ?, ?, ?);";
-    con.query(sql, [title, slug, content, tags], function(err, result) {
+    var sql = "INSERT INTO posts (title, slug, content, tags, summary) VALUES (?, ?, ?, ?, ?);";
+    con.query(sql, [title, slug, content, tags, summary], function(err, result) {
       if (err) {
         res.json({status: "NOK", error: err.message});
       }
       else {
+        if (req.files) {
+          var previewImage = req.files.previewImage;
+
+          var currentdate = new Date();
+          var fileNamePredecessor = currentdate.getDate().toString()+currentdate.getMonth().toString()+currentdate.getFullYear().toString()+currentdate.getTime().toString();
+          var filename = fileNamePredecessor + previewImage.name;
+          var title = path.basename(previewImage.name);
+          previewImage.mv('./media/' + filename);
+
+          var sql2 = "INSERT INTO preview_images (post_id, title, filename) VALUES (?, ?, ?);";
+          con.query(sql2, [result.insertId, title, filename], function(err2, result2) {
+            if (err2) {
+              console.log(err2);
+            }
+          });
+        }
         res.json({status: "OK", data: result});
       }
     });
@@ -241,13 +257,33 @@ app.post("/api/update-post", (req, res) => {
     var title = req.body.title;
     var content = req.body.content;
     var tags = req.body.tags;
+    var summary = req.body.summary;
 
-    var sql = "UPDATE posts SET title = ?, content = ?, tags = ? WHERE id = ?;";
-    con.query(sql, [title, content, tags, postId], function(err, result) {
+    var sql = "UPDATE posts SET title = ?, content = ?, tags = ?, summary = ? WHERE id = ?;";
+    con.query(sql, [title, content, tags, summary, postId], function(err, result) {
       if (err) {
         res.json({status: "NOK", error: err.message});
       }
       else {
+        if (req.files) {
+          var previewImage = req.files.previewImage;
+
+          var currentdate = new Date();
+          var fileNamePredecessor = currentdate.getDate().toString()+currentdate.getMonth().toString()+currentdate.getFullYear().toString()+currentdate.getTime().toString();
+          var filename = fileNamePredecessor + previewImage.name;
+          var title = path.basename(previewImage.name);
+          previewImage.mv('./media/' + filename);
+
+          var sql2 = "DELETE FROM preview_images WHERE post_id = ?;";
+          con.query(sql2, [postId], function(err2, result2) {
+            var sql3 = "INSERT INTO preview_images (post_id, title, filename) VALUES (?, ?, ?);";
+            con.query(sql3, [postId, title, filename], function(err3, result3) {
+              if (err3) {
+                console.log(err2);
+              }
+            });
+          });
+        }
         res.json({status: "OK", data: result});
       }
     });
@@ -266,7 +302,18 @@ app.get("/api/get-post-by-slug/:slug", (req, res) => {
       res.json({status: "NOK", error: err.message});
     }
     else {
-      res.json({status: "OK", data: result[0]});
+      var sql2 = "SELECT * FROM preview_images WHERE post_id = ?;";
+      con.query(sql2, [result[0].id], function(err2, result2) {
+        var post;
+        if (result2.length > 0) {
+          post = {...result[0], previewImage: result2[0]};
+        }
+        else {
+          post = {...result[0], previewImage: null};
+        }
+        console.log(post);
+        res.json({status: "OK", data: post});
+      });
     }
   });
 });
@@ -299,7 +346,18 @@ app.get("/api/get-post-by-id/:post_id", (req, res) => {
       res.json({status: "NOK", error: err.message});
     }
     else {
-      res.json({status: "OK", data: result[0]});
+      var sql2 = "SELECT * FROM preview_images WHERE post_id = ?;";
+      con.query(sql2, [post_id], function(err2, result2) {
+        var post;
+        if (result2.length > 0) {
+          post = {...result[0], previewImage: result2[0]};
+        }
+        else {
+          post = {...result[0], previewImage: null};
+        }
+        console.log(post);
+        res.json({status: "OK", data: post});
+      });
     }
   });
 });
@@ -315,7 +373,7 @@ app.post("/api/upload-image", (req, res) => {
     var currentdate = new Date();
     var fileNamePredecessor = currentdate.getDate().toString()+currentdate.getMonth().toString()+currentdate.getFullYear().toString()+currentdate.getTime().toString();
     var filename = fileNamePredecessor + image.name;
-    var title = path.basename(filename);
+    var title = path.basename(iamge.name);
     image.mv('./media/' + filename);
 
     var sql = "INSERT INTO images (title, filename) VALUES (?, ?);";
@@ -364,7 +422,6 @@ app.get("/api/get-comments/:post_id", (req, res) => {
           comments.push(comment);
         }
       }
-      console.log(comments);
       res.json({status: "OK", data: comments});
     }
   });

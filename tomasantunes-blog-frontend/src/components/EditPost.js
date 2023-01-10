@@ -11,6 +11,9 @@ export default function EditPost() {
   const [postId, setPostId] = useState();
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
+  const [summary, setSummary] = useState('');
+  const [currentPreviewImage, setCurrentPreviewImage] = useState();
+  const [previewImage, setPreviewImage] = useState();
   const [content, setContent] = useState();
   const params = useParams();
   const quillRef = useRef();
@@ -24,14 +27,28 @@ export default function EditPost() {
     setTags(e.target.value);
   }
 
+  function changeSummary(e) {
+    setSummary(e.target.value);
+  }
+
+  function changePreviewImage(e) {
+    setPreviewImage(e.target.files[0]);
+  }
+
   function requestUpdatePost(postId, title, tags, content) {
-    var data = {
-      postId,
-      title,
-      tags,
-      content
-    }
-    axios.post(config.BASE_URL + '/api/update-post', data)
+    var fd = new FormData();
+    fd.append('postId', postId);
+		fd.append('title', title);
+		fd.append('tags', tags);
+		fd.append('content', content);
+		fd.append('summary', summary);
+		fd.append('previewImage', previewImage);
+    axios({
+			method: "POST",
+			url: config.BASE_URL + '/api/update-post',
+			data: fd,
+			headers: { "Content-Type": "multipart/form-data" },
+		})
     .then((response) => {
       if (response.data.status == "OK") {
         alert("Post updated successfully");
@@ -53,6 +70,8 @@ export default function EditPost() {
         setTitle(response.data.data.title);
         setTags(response.data.data.tags);
         setContent(response.data.data.content);
+        setSummary(response.data.data.summary);
+        setCurrentPreviewImage(response.data.data.previewImage.filename);
       }
       else {
         alert(response.data.error);
@@ -134,8 +153,22 @@ export default function EditPost() {
           <input type="text" className="form-control" value={title} onChange={changeTitle} />
         </div>
         <div className="form-group mb-2">
+          <label>Summary</label>
+          <input type="text" className="form-control" value={summary} onChange={changeSummary} />
+        </div>
+        <div className="form-group mb-2">
           <label>Tags</label>
           <input type="text" className="form-control" value={tags} onChange={changeTags} />
+        </div>
+        <div className="form-group mb-2">
+          {currentPreviewImage == null ? <p>This post doesn't have a preview image.</p> : (
+            <>
+              <p>Current Preview Image</p>
+              <img src={config.BASE_URL + '/api/get-file/' + currentPreviewImage} /><br />
+            </>
+          )}
+          <label>Change Preview Image</label>
+          <input class="form-control" type="file" onChange={changePreviewImage} />
         </div>
         <ReactQuill
           ref={quillRef}

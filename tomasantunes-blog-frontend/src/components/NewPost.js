@@ -10,6 +10,8 @@ export default function NewPost() {
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
   const [content, setContent] = useState();
+  const [summary, setSummary] = useState('');
+  const [previewImage, setPreviewImage] = useState('');
   const quillRef = useRef();
 	const navigate = useNavigate();
 
@@ -21,13 +23,27 @@ export default function NewPost() {
 	setTags(e.target.value);
   }
 
+  function changeSummary(e) {
+	setSummary(e.target.value);
+  }
+
+  function changePreviewImage(e) {
+	setPreviewImage(e.target.files[0]);
+  }
+
   function requestSubmitPost(title, tags, content) {
-		var data = {
-			title,
-			tags,
-			content
-		}
-		axios.post(config.BASE_URL + '/api/add-post', data)
+		var fd = new FormData();
+		fd.append('title', title);
+		fd.append('tags', tags);
+		fd.append('content', content);
+		fd.append('summary', summary);
+		fd.append('previewImage', previewImage);
+		axios({
+			method: "POST",
+			url: config.BASE_URL + '/api/add-post',
+			data: fd,
+			headers: { "Content-Type": "multipart/form-data" },
+		})
 		.then((response) => {
 			if (response.data.status == "OK") {
 				alert("Post submitted successfully");
@@ -114,25 +130,33 @@ export default function NewPost() {
 		<>
 			<Sidebar />
 			<div className="p-5" style={{marginLeft: "280px", width: "calc(100% - 280px"}}>
-			<h1>New Post</h1>
-			<div className="form-group mb-2">
-				<label>Title</label>
-				<input type="text" className="form-control" value={title} onChange={changeTitle} />
-			</div>
-			<div className="form-group mb-4">
-				<label>Tags</label>
-				<input type="text" className="form-control" value={tags} onChange={changeTags} />
-			</div>
-			
-			<ReactQuill
-				ref={quillRef}
-				value={content}
-				modules={modules}
-				onChange={setContent}
-			/>
-			<div style={{textAlign: "right", marginTop: "20px"}}>
-				<button className="btn btn-primary" onClick={submitPost}>Submit</button>
-			</div>
+				<h1>New Post</h1>
+				<div className="form-group mb-2">
+					<label>Title</label>
+					<input type="text" className="form-control" value={title} onChange={changeTitle} />
+				</div>
+				<div className="form-group mb-2">
+					<label>Summary</label>
+					<textarea className="form-control" value={summary} onChange={changeSummary} rows={4}></textarea>
+				</div>
+				<div className="form-group mb-4">
+					<label>Tags</label>
+					<input type="text" className="form-control" value={tags} onChange={changeTags} />
+				</div>
+				<div class="form-group mb-4">
+					<label class="form-label">Preview Image</label>
+					<input class="form-control" type="file" onChange={changePreviewImage} />
+				</div>
+
+				<ReactQuill
+					ref={quillRef}
+					value={content}
+					modules={modules}
+					onChange={setContent}
+				/>
+				<div style={{textAlign: "right", marginTop: "20px"}}>
+					<button className="btn btn-primary" onClick={submitPost}>Submit</button>
+				</div>
 			</div>
 		</>
   )
