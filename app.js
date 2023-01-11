@@ -444,6 +444,27 @@ app.post("/api/add-comment", (req, res) => {
   });
 });
 
+app.get("/api/get-stats", (req, res) => {
+  if (req.session.isLoggedIn) {
+    var sql = "SELECT COUNT(*) AS total_views FROM analytics;";
+    con.query(sql, function(err, result) {
+      if (err) {
+        res.json({status: "NOK", error: err.message});
+      }
+      else {
+        var sql2 = "SELECT page_url, COUNT(*) AS views FROM analytics GROUP BY page_url;";
+        con.query(sql2, function(err2, result2) {
+          var stats = {total_views: result[0].total_views, page_views: result2};
+          res.json({status: "OK", data: stats});
+        });
+      }
+    });
+  }
+  else {
+    res.json({status: "NOK", error: "You are not logged in."});
+  }
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
