@@ -12,7 +12,7 @@ export default function EditPost() {
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState('');
   const [summary, setSummary] = useState('');
-  const [currentPreviewImage, setCurrentPreviewImage] = useState();
+  const [currentPreviewImage, setCurrentPreviewImage] = useState(null);
   const [previewImage, setPreviewImage] = useState();
   const [content, setContent] = useState();
   const params = useParams();
@@ -71,7 +71,9 @@ export default function EditPost() {
         setTags(response.data.data.tags);
         setContent(response.data.data.content);
         setSummary(response.data.data.summary);
-        setCurrentPreviewImage(response.data.data.previewImage.filename);
+        if (response.data.data.previewImage != null) {
+          setCurrentPreviewImage(response.data.data.previewImage.filename);
+        }
       }
       else {
         alert(response.data.error);
