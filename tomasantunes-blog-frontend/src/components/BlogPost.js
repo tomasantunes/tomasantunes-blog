@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import {useParams} from 'react-router-dom';
+import {useParams, useNavigate} from 'react-router-dom';
 import Navbar from './Navbar';
 import config from '../config.json';
 import Comment from './Comment';
@@ -9,6 +9,7 @@ import Footer from './Footer';
 
 export default function BlogPost() {
   const params = useParams();
+	const navigate = useNavigate();
 	const [slug, setSlug] = useState("");
 	const [postId, setPostId] = useState();
 	const [title, setTitle] = useState("");
@@ -67,7 +68,6 @@ export default function BlogPost() {
 		axios.get(config.BASE_URL + '/api/get-comments/' + post_id)
 		.then((response) => {
 			if (response.data.status == "OK") {
-				console.log(response.data.data);
 				setComments(response.data.data);
 			}
 			else {
@@ -87,8 +87,47 @@ export default function BlogPost() {
 		setCommentContent(e.target.value);
 	}
 
+	function previousPost() {
+		axios.get(config.BASE_URL + "/api/previous-post", {
+			params: {
+				post_id: postId
+			}
+		})
+		.then((response) => {
+			if (response.data.status == "OK") {
+				navigate(response.data.data);
+				navigate(0);
+			}
+			else {
+				alert(response.data.error);
+			}
+		})
+		.catch((err) => {
+			alert(err.message);
+		});
+	}
+
+	function nextPost() {
+		axios.get(config.BASE_URL + "/api/next-post", {
+			params: {
+				post_id: postId
+			}
+		})
+		.then((response) => {
+			if (response.data.status == "OK") {
+				navigate(response.data.data);
+				navigate(0);
+			}
+			else {
+				alert(response.data.error);
+			}
+		})
+		.catch((err) => {
+			alert(err.message);
+		});
+	}
+
 	useEffect(() => {
-		console.log(params.slug);
 		setSlug(params.slug);
 		loadPost(params.slug);
 	}, []);
@@ -109,6 +148,10 @@ export default function BlogPost() {
 					<hr/>
 					<div dangerouslySetInnerHTML={{__html: content}}></div>
 					<hr/>
+					<div style={{textAlign: "right"}}>
+						<button className="btn btn-outline-secondary mx-2" onClick={previousPost}>Previous</button>
+						<button className="btn btn-outline-secondary mx-2" onClick={nextPost}>Next</button>
+					</div>
         </div>
 				<div className="comment-form">
 					<h3>Leave a comment</h3>

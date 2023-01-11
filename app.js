@@ -11,6 +11,7 @@ var fs = require('fs');
 var escape = require('escape-html');
 const { lookup } = require('geoip-lite');
 var useragent = require('express-useragent');
+var config = require('./config');
 
 var app = express();
 
@@ -311,7 +312,6 @@ app.get("/api/get-post-by-slug/:slug", (req, res) => {
         else {
           post = {...result[0], previewImage: null};
         }
-        console.log(post);
         res.json({status: "OK", data: post});
       });
     }
@@ -358,6 +358,40 @@ app.get("/api/get-post-by-id/:post_id", (req, res) => {
         console.log(post);
         res.json({status: "OK", data: post});
       });
+    }
+  });
+});
+
+app.get("/api/next-post", (req, res) => {
+  var post_id = req.query.post_id;
+
+  var sql = "SELECT slug FROM posts WHERE id > ? ORDER BY id ASC LIMIT 1;";
+  con.query(sql, [post_id], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err.message});
+    }
+    if (result.length > 0) {
+      res.json({status: "OK", data: "/blog-post/" + result[0].slug});
+    }
+    else {
+      res.json({status: "NOK", error: "There is no next post."});
+    }
+  });
+});
+
+app.get("/api/previous-post", (req, res) => {
+  var post_id = req.query.post_id;
+
+  var sql = "SELECT slug FROM posts WHERE id < ? ORDER BY id DESC LIMIT 1;";
+  con.query(sql, [post_id], function(err, result) {
+    if (err) {
+      res.json({status: "NOK", error: err.message});
+    }
+    if (result.length > 0) {
+      res.json({status: "OK", data: "/blog-post/" + result[0].slug});
+    }
+    else {
+      res.json({status: "NOK", error: "There is no previous post."});
     }
   });
 });
