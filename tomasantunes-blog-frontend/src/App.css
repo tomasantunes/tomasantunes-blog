@@ -260,3 +260,7 @@ overflow-y: auto;
     margin-left: 3%;
     float: left;
 }
+
+.post-preview-text-fw {
+    width: 100%;
+}

@@ -56,12 +56,12 @@ export default function Blog() {
           {posts.map((post) => (
             <div className="col-md-6">
               <div className="post-list-item m-3">
-                  <div className="post-preview-image">
-                    {post.image_filename && 
+                  {post.image_filename && 
+                    <div className="post-preview-image">
                       <img src={"/api/get-file/" + post.image_filename} />
-                    }
-                  </div>
-                  <div className="post-preview-text">
+                    </div>
+                  }
+                  <div className={post.image_filename ? "post-preview-text" : "post-preview-text-fw"}>
                     <div class="post-header">
                       <h2><Link to={"/blog-post/" + post.slug}>{post.post_title}</Link></h2>
                       <small>{post.created_at} - {post.tags}</small>
