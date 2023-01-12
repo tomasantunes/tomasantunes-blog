@@ -174,7 +174,7 @@ app.post("/api/check-login", (req, res) => {
 app.get("/api/get-posts", (req, res) => {
   var offset = req.query.offset;
   var limit = req.query.limit;
-  var sql = "SELECT * FROM posts ORDER BY id DESC LIMIT ? OFFSET ?;";
+  var sql = "SELECT p.title AS post_title, p.summary, p.tags, p.slug, p.created_at, pi.title AS image_title, pi.filename AS image_filename FROM posts AS p LEFT JOIN preview_images AS pi ON p.id = pi.post_id ORDER BY p.id DESC LIMIT ? OFFSET ?;";
   var sql2 = "SELECT COUNT(*) AS countresult FROM posts;";
   con.query(sql, [Number(limit), Number(offset)], function(err, result) {
     if (err) {

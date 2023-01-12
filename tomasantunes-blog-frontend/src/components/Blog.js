@@ -23,14 +23,7 @@ export default function Blog() {
     })
     .then((response) => {
       if (response.data.status == "OK") {
-        var posts_arr = [];
-        console.log(response.data.data.posts);
-        for (var i in response.data.data.posts) {
-          const $ = cheerio.load(response.data.data.posts[i].content);
-          $('img').remove();
-          posts_arr.push({...response.data.data.posts[i], content: $('*').html()})
-        }
-        setPosts(posts_arr);
+        setPosts(response.data.data.posts);
         setTotalPages(Math.ceil(response.data.data.count / postsPerPage));
       }
       else {
@@ -59,17 +52,28 @@ export default function Blog() {
       <Navbar />
       <div className="container">
         <h1>Blog</h1>
-        {posts.map((post) => (
-          <div className="post-list-item">
-            <div class="post-header">
-              <h2><Link to={"/blog-post/" + post.slug}>{post.title}</Link></h2>
-              <small>{post.created_at} - {post.tags}</small>
+        <div className="row">
+          {posts.map((post) => (
+            <div className="col-md-6">
+              <div className="post-list-item m-3">
+                  <div className="post-preview-image">
+                    {post.image_filename && 
+                      <img src={"/api/get-file/" + post.image_filename} />
+                    }
+                  </div>
+                  <div className="post-preview-text">
+                    <div class="post-header">
+                      <h2><Link to={"/blog-post/" + post.slug}>{post.post_title}</Link></h2>
+                      <small>{post.created_at} - {post.tags}</small>
+                    </div>
+                    <hr/>
+                    <div className="post-summary">{post.summary}</div>
+                  </div>
+                  <div className="clearfix"></div>
+              </div>
             </div>
-            <hr/>
-            <div className="post-preview" dangerouslySetInnerHTML={{__html: post.content}}></div>
-            <hr/>
-          </div>
-        ))}
+          ))}
+        </div>
         <ReactPaginate
           previousLabel={"Previous"}
           nextLabel={"Next"}
