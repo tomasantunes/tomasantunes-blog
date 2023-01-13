@@ -175,11 +175,11 @@ app.post("/api/check-login", (req, res) => {
       else {
         var sql2 = "INSERT INTO logins (is_valid) VALUES (0);";
         con.query(sql2);
-        res.json({status: "NOK", data: "Wrong username/password."});
+        res.json({status: "NOK", error: "Wrong username/password."});
       }
     }
     else {
-      res.json({status: "NOK", data: "Too many login attempts."});
+      res.json({status: "NOK", error: "Too many login attempts."});
     }
   });
   

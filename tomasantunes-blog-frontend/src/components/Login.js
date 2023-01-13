@@ -24,11 +24,11 @@ export default function Login() {
         navigate("/admin");
       }
       else {
-        console.log(res.data.data);
+        alert(res.data.error);
       }
     })
     .catch(err => {
-      console.log(err.message);
+      alert(err.message);
     });
   }
 
