@@ -1,3 +1,3 @@
 # TODO
 
-- Limit login attempts
+- Replace alerts with sweet alert.
