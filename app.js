@@ -161,14 +161,29 @@ app.get('/admin/edit-post/:post_id', (req, res) => {
 app.post("/api/check-login", (req, res) => {
   var user = req.body.user;
   var pass = req.body.pass;
+
+  var sql = "SELECT * FROM logins WHERE is_valid = 0 AND created_at > (NOW() - INTERVAL 1 HOUR);";
+
+  con.query(sql, function (err, result) {
+    if (result.length <= 5) {
+      if (user == secretConfig.USER && pass == secretConfig.PASS) {
+        req.session.isLoggedIn = true;
+        var sql2 = "INSERT INTO logins (is_valid) VALUES (1);";
+        con.query(sql2);
+        res.json({status: "OK", data: "Login successful."});
+      }
+      else {
+        var sql2 = "INSERT INTO logins (is_valid) VALUES (0);";
+        con.query(sql2);
+        res.json({status: "NOK", data: "Wrong username/password."});
+      }
+    }
+    else {
+      res.json({status: "NOK", data: "Too many login attempts."});
+    }
+  });
   
-  if (user == secretConfig.USER && pass == secretConfig.PASS) {
-    req.session.isLoggedIn = true;
-    res.json({status: "OK", data: "Login successful."});
-  }
-  else {
-    res.json({status: "NOK", data: "Login failed."});
-  }
+  
 });
 
 app.get("/api/get-posts", (req, res) => {
