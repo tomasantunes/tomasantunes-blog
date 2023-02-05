@@ -3,6 +3,9 @@ import {useNavigate} from 'react-router-dom';
 import config from '../config';
 import axios from 'axios';
 import Sidebar from './Sidebar';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
@@ -20,11 +23,11 @@ export default function Posts() {
         setPostCount(response.data.data.length);
       }
       else {
-        alert(response.data.error);
+        MySwal.fire(response.data.error);
       }
     })
     .catch((err) => {
-      alert(err.message);
+      MySwal.fire(err.message);
     });
   }
 
@@ -50,11 +53,11 @@ export default function Posts() {
           loadPosts();
         }
         else {
-          alert(response.data.error);
+          MySwal.fire(response.data.error);
         }
       })
       .catch((err) => {
-        alert(err.message);
+        MySwal.fire(err.message);
       });
     }
   }
@@ -67,15 +70,15 @@ export default function Posts() {
     axios.post(config.BASE_URL + "/api/delete-post", {post_id: e.target.value})
     .then((response) => {
       if (response.data.status == "OK") {
-        alert("Post deleted successfully!");
+        MySwal.fire("Post deleted successfully!");
         loadPosts();
       }
       else {
-        alert(response.data.error);
+        MySwal.fire(response.data.error);
       }
     })
     .catch((err) => {
-      alert(err.message);
+      MySwal.fire(err.message);
     });
   }
 

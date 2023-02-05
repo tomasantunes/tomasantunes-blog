@@ -3,10 +3,12 @@ import Navbar from './Navbar';
 import axios from 'axios';
 import config from '../config.json';
 import {Link} from 'react-router-dom';
-import cheerio from 'cheerio';
 import ReactPaginate from 'react-paginate';
 import { Helmet } from "react-helmet";
 import Footer from './Footer';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
@@ -27,11 +29,11 @@ export default function Blog() {
         setTotalPages(Math.ceil(response.data.data.count / postsPerPage));
       }
       else {
-        alert(response.data.error);
+        MySwal.fire(response.data.error);
       }
     })
     .catch((err) => {
-      alert(err.message);
+      MySwal.fire("Error loading posts: " + err.message);
     });
   }
 

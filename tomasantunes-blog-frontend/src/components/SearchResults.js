@@ -6,6 +6,9 @@ import config from '../config.json';
 import {Link} from 'react-router-dom';
 import {Helmet} from "react-helmet";
 import Footer from './Footer';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 
 export default function SearchResults() {
 	const [query, setQuery] = useState("");
@@ -19,11 +22,11 @@ export default function SearchResults() {
 				setResults(response.data.data);
 			}
 			else {
-				alert(response.data.error);
+				MySwal.fire(response.data.error);
 			}
 		})
 		.catch((err) => {
-			alert(err.message);
+			MySwal.fire(err.message);
 		});
 	}
 

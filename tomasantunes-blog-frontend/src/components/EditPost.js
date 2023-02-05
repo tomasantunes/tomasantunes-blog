@@ -6,6 +6,9 @@ import {useParams} from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import {useNavigate} from 'react-router-dom';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 
 export default function EditPost() {
   const [postId, setPostId] = useState();
@@ -51,15 +54,15 @@ export default function EditPost() {
 		})
     .then((response) => {
       if (response.data.status == "OK") {
-        alert("Post updated successfully");
+        MySwal.fire("Post updated successfully");
         navigate("/admin/posts");
       }
       else {
-        alert(response.data.error);
+        MySwal.fire(response.data.error);
       }
     })
     .catch((err) => {
-      alert(err.message);
+      MySwal.fire(err.message);
     });
   }
 
@@ -76,11 +79,11 @@ export default function EditPost() {
         }
       }
       else {
-        alert(response.data.error);
+        MySwal.fire(response.data.error);
       }
     })
     .catch((err) => {
-      alert(err.message);
+      MySwal.fire(err.message);
     });
   }
 
@@ -102,7 +105,7 @@ export default function EditPost() {
 			quillRef.current.getEditor().insertEmbed(range.index, 'image', image_url);
 		}).catch((error) => {
 			console.log(error);
-			alert("Error uploading image");
+			MySwal.fire("Error uploading image");
 		});
 	}
 	

@@ -2,6 +2,9 @@ import React, {useState} from 'react';
 import axios from 'axios';
 import config from '../config.json';
 import {useNavigate} from 'react-router-dom';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 
 export default function Login() {
   const [user, setUser] = useState("");
@@ -24,11 +27,11 @@ export default function Login() {
         navigate("/admin");
       }
       else {
-        alert(res.data.error);
+        MySwal.fire(res.data.error);
       }
     })
     .catch(err => {
-      alert(err.message);
+      MySwal.fire(err.message);
     });
   }
 

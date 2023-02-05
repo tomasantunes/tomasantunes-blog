@@ -6,6 +6,9 @@ import config from '../config.json';
 import Comment from './Comment';
 import { Helmet } from "react-helmet";
 import Footer from './Footer';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 
 export default function BlogPost() {
   const params = useParams();
@@ -32,11 +35,11 @@ export default function BlogPost() {
 				loadComments(response.data.data.id);
 			}
 			else {
-				alert(response.data.error);
+				MySwal.fire(response.data.error);
 			}
 		})
 		.catch((err) => {
-			alert(err.message);
+			MySwal.fire(err.message);
 		});
 	}
 
@@ -50,17 +53,17 @@ export default function BlogPost() {
 		axios.post(config.BASE_URL + '/api/add-comment', data)
 		.then((response) => {
 			if (response.data.status == "OK") {
-				alert("Comment added successfully");
+				MySwal.fire("Comment added successfully");
 				setCommentAuthor("");
 				setCommentContent("");
 				loadComments(postId);
 			}
 			else {
-				alert(response.data.error);
+				MySwal.fire(response.data.error);
 			}
 		})
 		.catch((err) => {
-			alert(err.message);
+			MySwal.fire(err.message);
 		});
 	}
 
@@ -71,11 +74,11 @@ export default function BlogPost() {
 				setComments(response.data.data);
 			}
 			else {
-				alert(response.data.error);
+				MySwal.fire(response.data.error);
 			}
 		})
 		.catch((err) => {
-			alert(err.message);
+			MySwal.fire(err.message);
 		});
 	}
 
@@ -99,11 +102,11 @@ export default function BlogPost() {
 				navigate(0);
 			}
 			else {
-				alert(response.data.error);
+				MySwal.fire(response.data.error);
 			}
 		})
 		.catch((err) => {
-			alert(err.message);
+			MySwal.fire(err.message);
 		});
 	}
 
@@ -119,11 +122,11 @@ export default function BlogPost() {
 				navigate(0);
 			}
 			else {
-				alert(response.data.error);
+				MySwal.fire(response.data.error);
 			}
 		})
 		.catch((err) => {
-			alert(err.message);
+			MySwal.fire(err.message);
 		});
 	}
 

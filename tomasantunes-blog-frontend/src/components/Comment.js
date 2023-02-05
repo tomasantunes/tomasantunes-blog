@@ -1,6 +1,9 @@
 import React, {useState} from 'react';
 import axios from 'axios';
 import config from '../config';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 
 export default function Comment(props) {
 	const [showReplyForm, setShowReplyForm] = useState(false);
@@ -30,15 +33,15 @@ export default function Comment(props) {
 		axios.post(config.BASE_URL + '/api/add-comment', data)
 		.then((response) => {
 			if (response.data.status == "OK") {
-				alert("Comment added successfully");
+				MySwal.fire("Comment added successfully");
 				window.location.reload();
 			}
 			else {
-				alert(response.data.error);
+				MySwal.fire(response.data.error);
 			}
 		})
 		.catch((err) => {
-			alert(err.message);
+			MySwal.fire(err.message);
 		});
 	}
 

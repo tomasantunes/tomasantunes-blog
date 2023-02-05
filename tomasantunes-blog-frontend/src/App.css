@@ -264,3 +264,7 @@ overflow-y: auto;
 .post-preview-text-fw {
     width: 100%;
 }
+
+.swal2-confirm {
+    background-color: #0d6efd !important;
+}
