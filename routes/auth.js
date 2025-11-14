@@ -5,6 +5,7 @@ var { getMySQLConnection } = require('../libs/database');
 
 var con = getMySQLConnection();
 
+// This route receives a user and pass, checks if there were no more than 5 login attempts in the last hour and if the credentials match the ones in the secret config it returns status OK.
 router.post("/api/check-login", (req, res) => {
   var user = req.body.user;
   var pass = req.body.pass;
@@ -29,8 +30,8 @@ router.post("/api/check-login", (req, res) => {
       res.json({status: "NOK", error: "Too many login attempts."});
     }
   });
-  
-  
+
+
 });
 
 module.exports = router;

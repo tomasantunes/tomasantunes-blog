@@ -6,6 +6,7 @@ var path = require('path');
 
 var con = getMySQLConnection();
 
+// This route allows the client to upload an image to the media folder and inserts the corresponding title and filename to the images table.
 router.post("/api/upload-image", (req, res) => {
   if (req.session.isLoggedIn) {
     if(!req.files) {

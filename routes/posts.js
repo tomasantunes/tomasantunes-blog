@@ -5,6 +5,7 @@ var { getMySQLConnection } = require('../libs/database');
 
 var con = getMySQLConnection();
 
+// This route returns a list of posts paginated.
 router.get("/api/get-posts", (req, res) => {
   var offset = req.query.offset;
   var limit = req.query.limit;
@@ -22,6 +23,7 @@ router.get("/api/get-posts", (req, res) => {
   });
 });
 
+// This route returns all the posts.
 router.get("/api/get-all-posts", (req, res) => {
   var sql = "SELECT * FROM posts ORDER BY id DESC;";
   con.query(sql, function(err, result) {
@@ -34,6 +36,7 @@ router.get("/api/get-all-posts", (req, res) => {
   });
 });
 
+// This route adds a new post. It receives a title, content, tags, summary, it automatically creates a slug and it saves the preview image of the post.
 router.post("/api/add-post", (req, res) => {
   if (req.session.isLoggedIn) {
     var title = req.body.title;
@@ -73,6 +76,7 @@ router.post("/api/add-post", (req, res) => {
   }
 });
 
+// This route is for editing a post.
 router.post("/api/update-post", (req, res) => {
   if (req.session.isLoggedIn) {
     var postId = req.body.postId;
@@ -115,6 +119,7 @@ router.post("/api/update-post", (req, res) => {
   }
 });
 
+// This route retrieves a single post by its slug.
 router.get("/api/get-post-by-slug/:slug", (req, res) => {
   var slug = req.params.slug;
 
@@ -139,6 +144,7 @@ router.get("/api/get-post-by-slug/:slug", (req, res) => {
   });
 });
 
+// This route deletes a post by ID.
 router.post("/api/delete-post", (req, res) => {
   if (req.session.isLoggedIn) {
     var post_id = req.body.post_id;
@@ -158,6 +164,7 @@ router.post("/api/delete-post", (req, res) => {
   }
 });
 
+// This route retrieves a single post by ID.
 router.get("/api/get-post-by-id/:post_id", (req, res) => {
   var post_id = req.params.post_id;
 
@@ -183,6 +190,7 @@ router.get("/api/get-post-by-id/:post_id", (req, res) => {
   });
 });
 
+// This route gives you a link for the next post based on a current post's ID.
 router.get("/api/next-post", (req, res) => {
   var post_id = req.query.post_id;
 
@@ -200,6 +208,7 @@ router.get("/api/next-post", (req, res) => {
   });
 });
 
+// This route gives you a link for the previous post based on a current post's ID.
 router.get("/api/previous-post", (req, res) => {
   var post_id = req.query.post_id;
 

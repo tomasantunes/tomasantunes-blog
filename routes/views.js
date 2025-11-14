@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var path = require('path');
 
+// This page displays the front-end views by URL.
+
 router.get('/blog-post/:slug', (req,res) => {
   res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });

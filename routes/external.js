@@ -5,6 +5,7 @@ var secretConfig = require('../secret-config.json');
 
 var con = getMySQLConnection();
 
+// This route allows an external application to insert a post on the blog if they have the API key.
 router.post("/external/add-post", (req, res) => {
     if (req.body.api_key != secretConfig.EXTERNAL_API_KEY) {
         return res.status(401).json({status: "NOK", error: "Invalid Authorization"});

@@ -8,6 +8,8 @@ var axios = require('axios');
 var con = getMySQLConnection();
 const turndownService = new TurndownService();
 
+
+// This route exports all the blog's posts to the wiki.
 router.post("/api/export-to-wiki", (req, res) => {
   if (req.session.isLoggedIn) {
     var sql = "SELECT * FROM posts;";
@@ -22,7 +24,7 @@ router.post("/api/export-to-wiki", (req, res) => {
           var markdownContent = turndownService.turndown(post.content);
           var tags = "";
           if (post.tags) tags = post.tags.split(',').map(tag => tag.trim()).join(',');
-          
+
           try {
             const response = await axios.post(secretConfig.WIKI_URL + "/external/files/upsert", {
               api_key: secretConfig.WIKI_API_KEY,

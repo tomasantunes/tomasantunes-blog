@@ -5,6 +5,7 @@ const { lookup } = require('geoip-lite');
 
 var con = getMySQLConnection();
 
+// This route receives a full URL,a referrer and the IP when a user enters a page. It gets the current date and the location based on the IP. It gets the OS and browser from the User Agent and insert an entry into the analytics table.
 router.get("/api/analytics/page-entry", (req, res) => {
   var fullUrl = req.query.fullUrl;
   var referrer = req.query.referrer;
@@ -30,6 +31,7 @@ router.get("/api/analytics/page-entry", (req, res) => {
   });
 });
 
+// This route receives a full URL and the IP when the user exits a page and insert it into the analytics table.
 router.get("/api/analytics/exit-page", (req, res) => {
   var fullUrl = req.query.fullUrl;
   var dt = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -48,6 +50,7 @@ router.get("/api/analytics/exit-page", (req, res) => {
   });
 });
 
+// This route returns the analytics table.
 router.get("/api/get-stats", (req, res) => {
   if (req.session.isLoggedIn) {
     var sql = "SELECT COUNT(*) AS total_views FROM analytics;";

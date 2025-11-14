@@ -6,6 +6,7 @@ var escape = require('escape-html');
 
 var con = getMySQLConnection();
 
+// This route gets the comments for a specific post recursively.
 router.get("/api/get-comments/:post_id", (req, res) => {
   var post_id = req.params.post_id;
 
@@ -28,6 +29,7 @@ router.get("/api/get-comments/:post_id", (req, res) => {
   });
 });
 
+// This route adds a comment on a post and notifies the admin by e-mail.
 router.post("/api/add-comment", (req, res) => {
   var post_id = req.body.post_id;
   var parent_id = req.body.parent_id;
