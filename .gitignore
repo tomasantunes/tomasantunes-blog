@@ -1,0 +1,7 @@
+node_modules
+medium
+database/tomasantunes_blog.sql
+database/tomasantunes_blog_dump.sql
+secret-config.json
+config.json
+frontend/src/config.json
